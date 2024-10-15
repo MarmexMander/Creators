@@ -1,7 +1,9 @@
 namespace Creators.Models;
 class Publication
 {
+    public Guid Id { get; set; }
     public string Title { get; set; }
+    public CreatorUser Author { get; set; }
     public Media Preview { get; set; }
     public Media? MediaContent { get; set; }
     public string? TextContent { get; set; }

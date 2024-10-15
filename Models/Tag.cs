@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Creators.Models;
 
 [Flags]
@@ -11,8 +13,10 @@ enum Categorys{
 }       
 class Tag
 {
+    [Key]
     public string Name{ get; set; }
     public List<string> Aliases{ get; set; }
+    //TODO: localizable aliases?
     public Categorys Categorys{ get; set; }
     public bool IsNSFW{ get; set; }
 }
