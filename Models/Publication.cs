@@ -10,4 +10,6 @@ class Publication
     public List<Tag> Tags{ get; set; }
     public bool IsNSFW { get; set; }
     public List<Comment> Comments{ get; set; }
+    public int Score { get; set; }
+    public int FavCount { get; set; }
 }
