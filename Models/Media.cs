@@ -9,7 +9,7 @@ class Media
     public string MimeType{get; set;}
     public CreatorUser Author {get; set;}
     public DateTime UploadedAt {get; set;}
-    public MediaGroup? GroupId{get; set;}
+    public MediaGroup? Group{get; set;}
     public int LinksCount {get; set;}
     //Is media will be shown by the static link for non logged in users
     public bool IsPublic {get; set;}

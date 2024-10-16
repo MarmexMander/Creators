@@ -15,8 +15,5 @@ class Tag
 {
     [Key]
     public string Name{ get; set; }
-    public List<string> Aliases{ get; set; }
-    //TODO: localizable aliases?
-    public Categorys Categorys{ get; set; }
-    public bool IsNSFW{ get; set; }
+    public virtual TagInfo Info{ get; set; }
 }

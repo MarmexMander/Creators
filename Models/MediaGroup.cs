@@ -2,6 +2,6 @@ namespace Creators.Models;
 
 class MediaGroup
 {
-    Guid Id { get; set; }
-    List<Media> Medias { get; set; }
+    public Guid Id { get; set; }
+    public List<Media> Medias { get; set; }
 }

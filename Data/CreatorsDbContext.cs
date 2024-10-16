@@ -33,8 +33,27 @@ class CreatorsDbContext:DbContext
         publications.HasOne(p => p.Preview).WithMany();
         publications.HasOne(p => p.MediaContent).WithMany();
         publications.HasMany(p => p.Tags).WithMany();
+        publications.HasMany(p => p.Comments).WithOne();
 
+        //Not sure is right config to Tag.Name -> TagInfo.Id
+        modelBuilder.Entity<Tag>()
+        .HasOne(t=>t.Info)
+        .WithOne(ti => ti.Tag)
+        .HasForeignKey<TagInfo>(ti => ti.Id)
+        .IsRequired();
+
+        var media = modelBuilder.Entity<Media>();
+        media.HasOne(m=>m.Group).WithMany(g=>g.Medias).HasForeignKey("GroupId");
+        media.HasOne(m => m.Author).WithMany();
 
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder
+        .UseLazyLoadingProxies()
+        .UseNpgsql();//TODO: Add connection string!!!
+        base.OnConfiguring(optionsBuilder);
     }
 }
