@@ -38,65 +38,36 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "type": "docker-build",
-            "label": "docker-build: debug",
-            "dependsOn": [
-                "build"
+            "label": "docker-compose up debug",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+              "-f", "docker-compose.debug.yaml", 
+              "up",
+              "--build"
             ],
-            "dockerBuild": {
-                "tag": "creators:dev",
-                "target": "base",
-                "dockerfile": "${workspaceFolder}/DOCKERFILE",
-                "context": "${workspaceFolder}",
-                "pull": true
+            "problemMatcher": [],
+            "group": {
+              "kind": "build",
+              "isDefault": true
             },
-            "netCore": {
-                "appProject": "${workspaceFolder}/Creators.csproj"
+            "isBackground": true,
+            "presentation": {
+              "echo": true,
+              "reveal": "always",
+              "focus": false,
+              "revealProblems": "onProblem",
+              "panel": "shared"
             }
         },
         {
-            "type": "docker-build",
-            "label": "docker-build: release",
-            "dependsOn": [
-                "build"
-            ],
-            "dockerBuild": {
-                "tag": "creators:latest",
-                "dockerfile": "${workspaceFolder}/DOCKERFILE",
-                "context": "${workspaceFolder}",
-                "platform": {
-                    "os": "linux",
-                    "architecture": "amd64"
-                },
-                "pull": true
-            },
-            "netCore": {
-                "appProject": "${workspaceFolder}/Creators.csproj"
-            }
-        },
-        {
-            "type": "docker-run",
-            "label": "docker-run: debug",
-            "dependsOn": [
-                "docker-build: debug"
-            ],
-            "dockerRun": {},
-            "netCore": {
-                "appProject": "${workspaceFolder}/Creators.csproj",
-                "enableDebugging": true,
-                "configureSsl": false
-            }
-        },
-        {
-            "type": "docker-run",
-            "label": "docker-run: release",
-            "dependsOn": [
-                "docker-build: release"
-            ],
-            "dockerRun": {},
-            "netCore": {
-                "appProject": "${workspaceFolder}/Creators.csproj"
-            }
+            "label": "docker-compose down debug",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "-f", "docker-compose.debug.yaml", 
+                "down",
+            ]
         }
     ]
 }
