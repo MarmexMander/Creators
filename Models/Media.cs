@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Creators.Models;
-class Media
+public class Media
 {
     [Key]
     public Guid Guid {get; set;}

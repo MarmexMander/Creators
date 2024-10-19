@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Creators.Models;
 
 [Flags]
-enum AccessFlags
+public enum AccessFlags
 {
     //0-4 reserved for content accesses
     NSFWContent = 1 << 0,
@@ -26,7 +26,7 @@ enum AccessFlags
     UploaderTier5 = 1 << 29,
 }
 
-class CreatorUser : IdentityUser
+public class CreatorUser : IdentityUser
 {
     public Media? Pfp{ get; set; }
     public List<Tag>? BlacklistedTags { get; set; }

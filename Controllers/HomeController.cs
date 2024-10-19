@@ -1,16 +1,19 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Creators.Models;
+using Creators.Data;
 
 namespace Creators.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly CreatorsDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, CreatorsDbContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
     public IActionResult Index()

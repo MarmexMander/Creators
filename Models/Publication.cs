@@ -1,5 +1,5 @@
 namespace Creators.Models;
-class Publication
+public class Publication
 {
     public Guid Id { get; set; }
     public string Title { get; set; }

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Creators.Models;
 
 namespace Creators.Data;
-class CreatorsDbContext:DbContext
+public class CreatorsDbContext:DbContext
 {
     public DbSet<CreatorUser> Users{ get; set; }
     public DbSet<Publication> Publications{ get; set; }
@@ -16,7 +16,7 @@ class CreatorsDbContext:DbContext
     }
 
     override protected void OnModelCreating(ModelBuilder modelBuilder){
-
+        //TODO: Rename m2m relations' tables in user configuration
         var users = modelBuilder.Entity<CreatorUser>();
         users.HasOne(u => u.Pfp).WithMany();
         users.HasMany(u => u.BlacklistedTags).WithMany();
@@ -51,9 +51,10 @@ class CreatorsDbContext:DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        string user = System.Environment.GetEnvironmentVariable("POSTGRES_USER");
+        string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
         optionsBuilder
-        .UseLazyLoadingProxies()
-        .UseNpgsql();//TODO: Add connection string!!!
+        .UseNpgsql($"Server=db;Port=5432;Database=creators_db;User Id={user};Password={pwd};");//TODO: Obfuscate better
         base.OnConfiguring(optionsBuilder);
     }
 }

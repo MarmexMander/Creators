@@ -1,6 +1,6 @@
 namespace Creators.Models;
 
-class TagInfo
+public class TagInfo
 {
     public string Id { get; set; }
     public Tag Tag { get; set; }
