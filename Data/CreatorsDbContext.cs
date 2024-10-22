@@ -15,15 +15,16 @@ public class CreatorsDbContext:DbContext
         Database.EnsureCreated();
     }
 
+    //TODO: Move configuration to coresponding separate files
     override protected void OnModelCreating(ModelBuilder modelBuilder){
         //TODO: Rename m2m relations' tables in user configuration
         var users = modelBuilder.Entity<CreatorUser>();
         users.HasOne(u => u.Pfp).WithMany();
-        users.HasMany(u => u.BlacklistedTags).WithMany();
+        users.HasMany(u => u.BlacklistedTags).WithMany().UsingEntity("UsersBlacklistedTags");
         users.HasMany(u=>u.Publications).WithOne(p=>p.Author);
-        users.HasMany(u=>u.Favorites).WithMany();
-        users.HasMany(u=>u.VotedUp).WithMany();
-        users.HasMany(u=>u.VotedDown).WithMany();
+        users.HasMany(u=>u.Favorites).WithMany().UsingEntity("UsersFavoritePublications");
+        users.HasMany(u=>u.VotedUp).WithMany().UsingEntity("UsersVotedUpPublications");
+        users.HasMany(u=>u.VotedDown).WithMany().UsingEntity("UsersVotedDownPublications");
         
         var comments = modelBuilder.Entity<Comment>();
         comments.HasOne(c => c.Author).WithMany();
@@ -33,9 +34,8 @@ public class CreatorsDbContext:DbContext
         publications.HasOne(p => p.Preview).WithMany();
         publications.HasOne(p => p.MediaContent).WithMany();
         publications.HasMany(p => p.Tags).WithMany();
-        publications.HasMany(p => p.Comments).WithOne();
+        publications.HasMany(p => p.Comments).WithOne(c => c.Publication);
 
-        //Not sure is right config to Tag.Name -> TagInfo.Id
         modelBuilder.Entity<Tag>()
         .HasOne(t=>t.Info)
         .WithOne(ti => ti.Tag)
@@ -53,8 +53,9 @@ public class CreatorsDbContext:DbContext
     {
         string user = System.Environment.GetEnvironmentVariable("POSTGRES_USER");
         string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+        string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
         optionsBuilder
-        .UseNpgsql($"Server=db;Port=5432;Database=creators_db;User Id={user};Password={pwd};");//TODO: Obfuscate better
+        .UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
         base.OnConfiguring(optionsBuilder);
     }
 }

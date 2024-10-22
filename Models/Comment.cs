@@ -7,5 +7,5 @@ public class Comment
     public List<Comment> Children { get; set;} = new List<Comment>();
     public string Content { get; set; }
     public DateTime CreatedAt { get;set;}
-    
+    public Publication Publication { get; set; }
 }
