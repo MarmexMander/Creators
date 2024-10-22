@@ -36,4 +36,5 @@ public class CreatorUser : IdentityUser
     public List<Publication> Favorites{ get; set; }
     public List<Publication> VotedUp{ get; set; }
     public List<Publication> VotedDown{ get; set; }
+    public List<IdentityRole<int>> Roles{ get; set; }
 }

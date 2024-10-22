@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Creators.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Creators.Data;
-public class CreatorsDbContext:DbContext
+public class CreatorsDbContext: IdentityDbContext<CreatorUser>
 {
-    public DbSet<CreatorUser> Users{ get; set; }
+    //public DbSet<CreatorUser> Users{ get; set; }
     public DbSet<Publication> Publications{ get; set; }
     public DbSet<Comment> Comments{ get; set; }
     public DbSet<Media> Medias{ get; set; }
@@ -49,13 +50,13 @@ public class CreatorsDbContext:DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        string user = System.Environment.GetEnvironmentVariable("POSTGRES_USER");
-        string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-        string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
-        optionsBuilder
-        .UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
-        base.OnConfiguring(optionsBuilder);
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     string user = System.Environment.GetEnvironmentVariable("POSTGRES_USER");
+    //     string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+    //     string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
+    //     optionsBuilder
+    //     .UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
+    //     base.OnConfiguring(optionsBuilder);
+    // }
 }
