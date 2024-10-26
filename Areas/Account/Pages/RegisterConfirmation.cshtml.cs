@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Creators.Areas.Identity.Pages.Account
+namespace Creators.Areas.Account.Pages
 {
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel

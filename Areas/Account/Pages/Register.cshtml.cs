@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
-namespace Creators.Areas.Identity.Pages.Account
+namespace Creators.Areas.Account.Pages
 {
     public class RegisterModel : PageModel
     {
