@@ -12,7 +12,7 @@ public class DbContextFactory : IDesignTimeDbContextFactory<CreatorsDbContext>
         string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
         string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
         var optionsBuilder = new DbContextOptionsBuilder<CreatorsDbContext>();
-        optionsBuilder.UseNpgsql($"Server=localhost;Port=5432;Database={db};User Id={user};Password={pwd}");
+        optionsBuilder.UseNpgsql($"Server=localhost;Port=5432;Database={db};User Id={user};Password={pwd};");
         
         return new CreatorsDbContext(optionsBuilder.Options);
     }
