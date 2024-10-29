@@ -1,7 +1,7 @@
 using Creators.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Creators.Models;
+using Creators.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("CreatorsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'CreatorsDbContextConnection' not found.");
@@ -18,7 +18,12 @@ builder.Services.AddDbContext<CreatorsDbContext>(b =>
     b.UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
 });
 
-builder.Services.AddDefaultIdentity<CreatorUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CreatorsDbContext>();
+builder.Services.AddLogging( logger => {
+    logger.AddConsole();
+});
+
+builder.Services.AddDefaultIdentity<Creators.Models.CreatorUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CreatorsDbContext>();
+builder.Services.AddScoped<IMediaFileManager, LocalMediaFileManager>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
