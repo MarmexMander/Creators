@@ -19,6 +19,8 @@ services:
     depends_on:
       - db
       - redis
+    volumes:
+      - media:/media:rw
 
   db:
     image: postgres:13
@@ -38,3 +40,4 @@ services:
 
 volumes:
   postgres_data:
+  media:

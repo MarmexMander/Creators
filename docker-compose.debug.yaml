@@ -24,6 +24,7 @@ services:
       - redis
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
+      - media:/media:rw
 
   db:
     image: postgres:13
@@ -43,3 +44,4 @@ services:
 
 volumes:
   postgres_data:
+  media:

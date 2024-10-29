@@ -26,7 +26,7 @@ public enum AccessFlags
     UploaderTier5 = 1 << 29,
 }
 
-public class CreatorUser : IdentityUser
+public class CreatorUser : IdentityUser //TODO: Add default values
 {
     public Media? Pfp{ get; set; }
     public List<Tag>? BlacklistedTags { get; set; }
