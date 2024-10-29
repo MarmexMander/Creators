@@ -45,7 +45,7 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
 
         var media = modelBuilder.Entity<Media>();
         media.HasOne(m=>m.Group).WithMany(g=>g.Medias).HasForeignKey("GroupId");
-        media.HasOne(m => m.Author).WithMany();
+        media.HasOne(m => m.Uploader).WithMany();
 
         base.OnModelCreating(modelBuilder);
     }
