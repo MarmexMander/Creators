@@ -1,0 +1,13 @@
+@model Publication;
+@using Creators.Services;
+@inject IMediaFileManager mediaFiles;
+
+<img src="@mediaFiles.GetMediaStaticUrl(Model.MediaContent)" class="object-center h-screen max-w-full object-scale-down" />
+
+@if(!string.IsNullOrWhiteSpace(Model.Description)){
+    <p class="rounded bg-opacity-60 bg-blue-400" >@Model.Description</p>
+}
+
+@foreach(var comment in Model.Comments){
+    <partial name="_PartialComment" model="comment"/>
+}
