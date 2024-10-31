@@ -25,16 +25,16 @@ class LocalMediaFileManager : IMediaFileManager, IDisposable
         _writeSemaphore.Dispose();
     }
 
-    public FileStreamResult GetMediaWebStream(Media metadata)
+    public FileStream GetMediaStream(Media metadata)
     {
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(LocalMediaFileManager));
 
         if (metadata == null) return null;
         var fileExtention = Path.GetExtension(metadata.OriginalName);
-        var filePath = Path.Combine(_mediaLocation, $"{metadata.Guid}{fileExtention}"); //TODO: Maybe separate file extention and name in DB or save local media without extentions
+        var filePath = Path.Combine(_mediaLocation, $"{metadata.Guid}{fileExtention}"); 
         var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        return new FileStreamResult(fileStream, metadata.MimeType);
+        return fileStream;
     }
 
     public string GetMediaStaticUrl(Media metadata)

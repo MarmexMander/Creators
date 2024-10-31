@@ -25,8 +25,9 @@ public class StaticMediaController : Controller
         var media = await _db.Medias.FirstAsync(m=>m.Guid == id);
         if(media == null) return NotFound();
 
-        var mediaResult = _mediaFileManager.GetMediaWebStream(media);
-        if(mediaResult == null) return NotFound();
+        var mediaStream = _mediaFileManager.GetMediaStream(media);
+        FileStreamResult mediaResult = new(mediaStream, media.MimeType);
+        if(mediaStream == null) return NotFound();
         
         if(media.IsPublic)
             return mediaResult;            
