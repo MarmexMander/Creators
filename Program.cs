@@ -1,6 +1,7 @@
 using Creators.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
 using Creators.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,12 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/debug/routes", (IEnumerable<EndpointDataSource> endpointSources) =>
         string.Join("\n", endpointSources.SelectMany(source => source.Endpoints)));
 }
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "Resources")),
+    RequestPath = "/resources"
+});
 app.MapControllers();
 app.MapRazorPages();
 app.Run();

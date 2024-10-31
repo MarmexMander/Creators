@@ -54,14 +54,4 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
 
         base.OnModelCreating(modelBuilder);
     }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     string user = System.Environment.GetEnvironmentVariable("POSTGRES_USER");
-    //     string pwd = System.Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-    //     string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
-    //     optionsBuilder
-    //     .UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
-    //     base.OnConfiguring(optionsBuilder);
-    // }
 }

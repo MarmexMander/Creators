@@ -3,7 +3,7 @@
 @using Microsoft.IdentityModel.Tokens;
 @inject IMediaFileManager mediaFiles;
 <div class="container flex flex-row rounded bg-blue-300 bg-opacity-65 blur max-w-full">
-    <img src="@mediaFiles.GetMediaStaticUrl(Model.Author.Pfp ?? Creators.Defaults.DefaultPFP)" 
+    <img src="@(Model.Author.Pfp is not null ? mediaFiles.GetMediaStaticUrl(Model.Author.Pfp) : @Defaults.defaultPfp)" 
     class="w-20 max-h20 border-r-2 border-blue-900 border-spacing-3"/>
     <div class="divide-y-2 h-fit">
         <div>@Model.Content</div>
