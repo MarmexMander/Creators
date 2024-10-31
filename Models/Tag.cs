@@ -6,11 +6,10 @@ namespace Creators.Models;
 
 [Flags]
 public enum Categorys{
-    Music = 1 << 0,
-    Photography = 1 << 1,
-    Art = 1 << 2,
-    Poetry = 1 << 3,
-    Prose = 1 << 4,
+    Art,
+    Music,
+    Poetry,
+    Prose,
     
 }       
 public class Tag

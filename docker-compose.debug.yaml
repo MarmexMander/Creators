@@ -5,7 +5,7 @@ services:
     image: creators
     build:
       context: .
-      dockerfile: ./DOCKERFILE
+      dockerfile: ./Dockerfile
       args:
         - configuration=Debug
     env_file:

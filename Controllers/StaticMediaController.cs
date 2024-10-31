@@ -3,6 +3,7 @@ using Creators.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Creators.Services;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("static")]
@@ -21,7 +22,7 @@ public class StaticMediaController : Controller
 
     [HttpGet("{id:Guid}")]
     public async Task<IActionResult> Media(Guid id){
-        var media = await _db.Medias.FindAsync(id);
+        var media = await _db.Medias.FirstAsync(m=>m.Guid == id);
         if(media == null) return NotFound();
 
         var mediaResult = _mediaFileManager.GetMediaWebStream(media);

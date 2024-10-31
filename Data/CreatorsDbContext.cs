@@ -26,16 +26,21 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         users.HasMany(u=>u.Favorites).WithMany().UsingEntity("UsersFavoritePublications");
         users.HasMany(u=>u.VotedUp).WithMany().UsingEntity("UsersVotedUpPublications");
         users.HasMany(u=>u.VotedDown).WithMany().UsingEntity("UsersVotedDownPublications");
+        users.Navigation(u=>u.Pfp).AutoInclude();
         
         var comments = modelBuilder.Entity<Comment>();
         comments.HasOne(c => c.Author).WithMany();
         comments.HasMany(c => c.Children).WithOne(c => c.Parent);
+        comments.Navigation(c=>c.Author).AutoInclude();
+        //comments.Navigation(c=>c.Parent).AutoInclude();
+        comments.Navigation(c=>c.Publication).AutoInclude();
 
         var publications = modelBuilder.Entity<Publication>();
         publications.HasOne(p => p.Preview).WithMany();
         publications.HasOne(p => p.MediaContent).WithMany();
         publications.HasMany(p => p.Tags).WithMany();
         publications.HasMany(p => p.Comments).WithOne(c => c.Publication);
+        publications.Navigation(p=>p.Preview).AutoInclude();
 
         modelBuilder.Entity<Tag>()
         .HasOne(t=>t.Info)

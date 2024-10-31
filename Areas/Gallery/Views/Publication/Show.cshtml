@@ -8,6 +8,19 @@
     <p class="rounded bg-opacity-60 bg-blue-400" >@Model.Description</p>
 }
 
+<form asp-action="PostComment" method="post">
+    <input type="hidden" name="PublicationId" value="@Model.Id" />
+    
+    <input type="hidden" name="ParentCommentId" value="" />
+
+    <div class="form-group">
+        <label for="Content">Comment</label>
+        <textarea id="Content" name="Content" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Post Comment</button>
+</form>
+
 @foreach(var comment in Model.Comments){
-    <partial name="_PartialComment" model="comment"/>
+    <partial name="_PartialComment" model="comment"/> //TODO:Rewrite to RenderPartialAsync?
 }

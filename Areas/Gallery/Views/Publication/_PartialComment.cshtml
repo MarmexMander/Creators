@@ -5,14 +5,22 @@
 <div class="container flex flex-row rounded bg-blue-300 bg-opacity-65 blur max-w-full">
     <img src="@mediaFiles.GetMediaStaticUrl(Model.Author.Pfp ?? Creators.Defaults.DefaultPFP)" 
     class="w-20 max-h20 border-r-2 border-blue-900 border-spacing-3"/>
-    <div class="divide-y-2">
+    <div class="divide-y-2 h-fit">
         <div>@Model.Content</div>
-        @if(!Model.Children.IsNullOrEmpty()){
+        @if(Model.Children.Any()){
             <div>
                 @foreach(var comment in Model.Children){
-                    <partial name="_PartialComment" model="comment"/>
+                    <partial name="_PartialComment" model="comment"/> //TODO:Rewrite to RenderPartialAsync?
                 }
             </div>
         }
+        <a href="#" onclick="replyToComment('@Model.Id')">Reply</a>
     </div>
 </div>    
+
+<script>
+    function replyToComment(commentId) {
+        document.querySelector('input[name="ParentCommentId"]').value = commentId;
+        document.getElementById('Content').focus();
+    }
+</script>

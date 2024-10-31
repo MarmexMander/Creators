@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Creators.Models;
+
+//TODO: Add lazy loading of rarely used props
 public class Media
 {
     [Key]
