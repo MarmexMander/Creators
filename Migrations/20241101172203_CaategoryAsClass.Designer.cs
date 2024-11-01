@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Creators.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Creators.Migrations
 {
     [DbContext(typeof(CreatorsDbContext))]
-    partial class CreatorsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241101172203_CaategoryAsClass")]
+    partial class CaategoryAsClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

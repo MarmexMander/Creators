@@ -4,14 +4,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Creators.Models;
 
-[Flags]
-public enum Categorys{
-    Art,
-    Music,
-    Poetry,
-    Prose,
-    
+public class Category{
+    public int Id { get; set; }
+    public string Name { get; set; }
 }       
+
 public class Tag
 {
     public Tag()

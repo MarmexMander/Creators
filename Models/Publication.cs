@@ -8,7 +8,7 @@ public class Publication
     public Media? MediaContent { get; set; }
     public string? TextContent { get; set; }
     public string? Description { get; set; }
-    public Categorys Category { get; set; }
+    public Category Category { get; set; }
     public List<Tag> Tags{ get; set; }
     public bool IsNSFW { get; set; }
     public List<Comment> Comments{ get; set; }
