@@ -1,0 +1,40 @@
+@model string;
+<div class="tag-selector flex flex-row flex-wrap">
+    <div id="selected-tags" class="selected-tags" name="@Model"></div>
+    <input type="text" id="tag-input" placeholder="Type to add tags..." />
+    <div id="suggestions" class="suggestions-box"></div>
+</div>
+
+@* Implement helper to import partial views scripts into the parent view if it is not already imported *@
+<script>
+    document.getElementById('tag-input').addEventListener('input', async function (e) {
+        const query = e.target.value;
+        if (query.length > 1) {
+            const response = await fetch('/api/SearchTags?query=' + encodeURIComponent(query));
+            const suggestions = await response.json();
+            console.log(suggestions);
+            const suggestionBox = document.getElementById('suggestions');
+            suggestionBox.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.textContent = suggestion;
+                suggestionItem.classList.add('suggestion-item');
+                suggestionItem.addEventListener('click', () => addTag(suggestion));
+                suggestionBox.appendChild(suggestionItem);
+            });
+        }
+    });
+
+    function addTag(tag) {
+        const selectedTags = document.getElementById('selected-tags');
+        const tagElement = document.createElement('input');
+        tagElement.classList.add('tag-item');
+        tagElement.value = tag;
+        tagElement.readOnly = true;
+        tagElement.setAttribute("name", selectedTags.getAttribute("name"));
+        selectedTags.appendChild(tagElement);
+
+        document.getElementById('tag-input').value = '';
+        document.getElementById('suggestions').innerHTML = '';
+    }
+</script>
