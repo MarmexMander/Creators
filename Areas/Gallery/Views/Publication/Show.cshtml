@@ -3,9 +3,10 @@
 @inject IMediaFileManager mediaFiles;
 
 <img src="@mediaFiles.GetMediaStaticUrl(Model.MediaContent)" class="object-center max-h-screen max-w-full object-scale-down" />
+@* Make partial view for handling different type fo content *@
 
 @if(!string.IsNullOrWhiteSpace(Model.Description)){
-    <p class="rounded bg-opacity-60 bg-blue-400" >@Model.Description</p>
+    <p class="rounded bg-opacity-60 bg-blue-400" >@Model.Description</p> 
 }
 
 <form asp-action="PostComment" method="post">
