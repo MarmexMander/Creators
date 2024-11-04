@@ -31,6 +31,23 @@ public class PublicationController : Controller
         return View(publication);
     }
 
+    [HttpGet]
+    public IActionResult Add()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(PublicationDTO model)
+    {
+
+        await Task.Yield();
+    
+        return null;
+    }
+    
+    
+
     [HttpPost("comment")]
     public async Task<IActionResult> PostComment(CommentDTO model)
     {

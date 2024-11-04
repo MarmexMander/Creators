@@ -1,0 +1,65 @@
+@model PublicationDTO
+<form asp-action="Add" method="post" class="flex flex-col " enctype="multipart/form-data" id="publicationForm">
+    @* <input type="hidden" name="PublicationId" value="@Model.Id" />
+    
+    <input type="hidden" name="ParentCommentId" value="" />
+
+    <div class="form-group">
+        <label for="Content">Comment</label>
+        <textarea id="Content" name="Content" class="form-control" rows="3" required></textarea>
+    </div>
+    *@
+    <input asp-for="Title"/>
+    <input asp-for="TextContent"/>
+    <input asp-for="Description"/>
+    <input asp-for="Media"/> @*TODO: Pre*@
+    @* TODO: Category *@
+    @await Html.PartialAsync("_TagsSelector", "Tags")
+    <input asp-for="IsNSFW"/>
+    <button type="submit" class="btn btn-primary">Create publication</button> 
+</form>
+
+@section Scripts{
+    <script>
+        document.getElementById("publicationForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const form = document.getElementById("publicationForm");
+            const submitButton = document.getElementById("submitButton");
+            const loadingSpinner = document.getElementById("loadingSpinner");
+            const successPopup = document.getElementById("successPopup");
+
+            // Disable the form and show the loading spinner
+            submitButton.disabled = true;
+            loadingSpinner.style.display = "block";
+
+            // Create FormData object to handle file upload
+            const formData = new FormData(form);
+
+            try {
+                // Send form data asynchronously with Fetch API
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData
+                });
+
+                // Hide the loading spinner
+                loadingSpinner.style.display = "none";
+
+                if (response.ok) {
+                    //TODO: redirect to the publication page and make post request add popup messages to the bag    
+                } else {
+                    // If response has errors, re-enable form and display an error message
+                    submitButton.disabled = false;
+                    alert("Error: Could not create publication. Please try again.");
+                }
+            } catch (error) {
+                // Handle network or other errors
+                console.error("Error submitting form:", error);
+                alert("An error occurred. Please try again.");
+                submitButton.disabled = false;
+                loadingSpinner.style.display = "none";
+            }
+        });
+    </script>
+}
