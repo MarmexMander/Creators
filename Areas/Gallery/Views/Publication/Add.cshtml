@@ -15,10 +15,10 @@
     <input asp-for="TextContent"/>
     <input asp-for="Description"/>
     <input asp-for="Media"/> @*TODO: Preloading*@
-    @Html.DropDownListFor(p=>p.Category, db.Categories.Select(c=>new SelectListItem(c.Name, c.Id.ToString())))
+    <select asp-for="Category" asp-items="Html.GetEnumSelectList<CategoryEnum>()" ></select>    
     @await Html.PartialAsync("_TagsSelector", "Tags")
     <input asp-for="IsNSFW"/>
-    <button type="submit" class="btn btn-primary">Create publication</button> 
+    <button id="submitButton" type="submit" class="btn btn-primary">Create publication</button> 
 </form>
 
 @section Scripts{
@@ -29,11 +29,10 @@
             const form = document.getElementById("publicationForm");
             const submitButton = document.getElementById("submitButton");
             const loadingSpinner = document.getElementById("loadingSpinner");
-            const successPopup = document.getElementById("successPopup");
 
             // Disable the form and show the loading spinner
             submitButton.disabled = true;
-            loadingSpinner.style.display = "block";
+            //loadingSpinner.style.display = "block";
 
             // Create FormData object to handle file upload
             const formData = new FormData(form);
@@ -46,7 +45,7 @@
                 });
 
                 // Hide the loading spinner
-                loadingSpinner.style.display = "none";
+                //loadingSpinner.style.display = "none";
 
                 if (response.ok) {
                     //TODO: redirect to the publication page and make post request add popup messages to the bag    
@@ -60,7 +59,7 @@
                 console.error("Error submitting form:", error);
                 alert("An error occurred. Please try again.");
                 submitButton.disabled = false;
-                loadingSpinner.style.display = "none";
+                //loadingSpinner.style.display = "none";
             }
         });
     </script>
