@@ -44,11 +44,9 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         publications.HasMany(p => p.Comments).WithOne(c => c.Publication);
         publications.Navigation(p=>p.Preview).AutoInclude();
 
-        modelBuilder.Entity<Tag>()
-        .HasOne(t=>t.Info)
-        .WithOne(ti => ti.Tag)
-        .HasForeignKey<TagInfo>(ti => ti.Id)
-        .IsRequired();
+        var tags = modelBuilder.Entity<Tag>();
+        tags.HasOne(t=>t.AliasedTo).WithMany();
+        tags.HasMany(t => t.Categories).WithMany();
 
         modelBuilder.Entity<Category>().SeedEnumValues<Category, CategoryEnum>(ce=>ce);
 

@@ -1,26 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Creators.Models;
-
 public class Tag
 {
-    public Tag()
-    {
-    }
-    private Tag(ILazyLoader lazyLoader)
-    {
-        _lazyLoader = lazyLoader;
-    }
-    
-    ILazyLoader _lazyLoader;
-    TagInfo _info;
-
-    [Key]
+    [MaxLength(40), Key]
     public string Name{ get; set; }
-    public TagInfo Info{ 
-        get => _lazyLoader.Load(this, ref _info);
-        set => _info = value; }
-    
+    public List<Category> Categories{ get; set; }
+    public Tag? AliasedTo{get; set;}
+    public bool IsNSFW{ get; set; } = false;
 }

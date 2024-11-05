@@ -31,17 +31,6 @@ namespace Creators.Controllers
             .ToListAsync();
 
             return tags;
-        }
-        
-        [HttpGet]
-        public async Task<ActionResult<TagInfo>> GetTagInfo(string tagName)
-        {
-            var tag = await _dbContext.Tags
-            .Include(t=>t.Info)
-            .FirstAsync(t=>t.Name == tagName);
-        
-            return tag.Info;
-        }
-        
+        }        
     }
 }
