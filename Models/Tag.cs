@@ -4,11 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Creators.Models;
 
-public class Category{
-    public int Id { get; set; }
-    public string Name { get; set; }
-}       
-
 public class Tag
 {
     public Tag()
