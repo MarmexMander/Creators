@@ -2,21 +2,19 @@
 @using Creators.Data;
 @inject CreatorsDbContext db;
 <form asp-action="Add" method="post" class="flex flex-col " enctype="multipart/form-data" id="publicationForm">
-    @* <input type="hidden" name="PublicationId" value="@Model.Id" />
-    
-    <input type="hidden" name="ParentCommentId" value="" />
-
-    <div class="form-group">
-        <label for="Content">Comment</label>
-        <textarea id="Content" name="Content" class="form-control" rows="3" required></textarea>
-    </div>
-    *@
+    <label asp-for="Title"></label>
     <input asp-for="Title"/>
+    <label asp-for="TextContent"></label>
     <input asp-for="TextContent"/>
+    <label asp-for="Description"></label>
     <input asp-for="Description"/>
+    <label asp-for="Media"></label>
     <input asp-for="Media"/> @*TODO: Preloading*@
+    <label asp-for="Category"></label>
     <select asp-for="Category" asp-items="Html.GetEnumSelectList<CategoryEnum>()" ></select>    
-    @await Html.PartialAsync("_TagsSelector", "Tags")
+    <label asp-for="Tags"></label>
+    <partial name="_TagsSelector" model='"Tags"'/>
+    <label asp-for="IsNSFW"></label>
     <input asp-for="IsNSFW"/>
     <button id="submitButton" type="submit" class="btn btn-primary">Create publication</button> 
 </form>
