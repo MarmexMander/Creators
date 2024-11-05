@@ -1,4 +1,6 @@
 @model PublicationDTO
+@using Creators.Data;
+@inject CreatorsDbContext db;
 <form asp-action="Add" method="post" class="flex flex-col " enctype="multipart/form-data" id="publicationForm">
     @* <input type="hidden" name="PublicationId" value="@Model.Id" />
     
@@ -12,8 +14,8 @@
     <input asp-for="Title"/>
     <input asp-for="TextContent"/>
     <input asp-for="Description"/>
-    <input asp-for="Media"/> @*TODO: Pre*@
-    @* TODO: Category *@
+    <input asp-for="Media"/> @*TODO: Preloading*@
+    @Html.DropDownListFor(p=>p.Category, db.Categories.Select(c=>new SelectListItem(c.Name, c.Id.ToString())))
     @await Html.PartialAsync("_TagsSelector", "Tags")
     <input asp-for="IsNSFW"/>
     <button type="submit" class="btn btn-primary">Create publication</button> 

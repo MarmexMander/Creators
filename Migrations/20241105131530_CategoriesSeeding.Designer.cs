@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Creators.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Creators.Migrations
 {
     [DbContext(typeof(CreatorsDbContext))]
-    partial class CreatorsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105131530_CategoriesSeeding")]
+    partial class CategoriesSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,29 +38,7 @@ namespace Creators.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "Art"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "Music"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Prose"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Poetry"
-                        });
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("Creators.Models.Comment", b =>

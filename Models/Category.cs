@@ -16,9 +16,11 @@ public class Category{
         Name = categoryEnum.ToString();
     }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public Category(){}
+
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int Id { get; set; }
-    
+
     [MaxLength(15)]
     public string Name { get; set; }
 

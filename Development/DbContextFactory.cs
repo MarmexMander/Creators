@@ -1,6 +1,8 @@
 using Creators.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Creators.Models;
+using Creators.Extentions;
 
 namespace Creators.Development;
 

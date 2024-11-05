@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Creators.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Creators.Extentions;
 
 namespace Creators.Data;
 public class CreatorsDbContext: IdentityDbContext<CreatorUser>
@@ -10,6 +11,7 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
     public DbSet<Comment> Comments{ get; set; }
     public DbSet<Media> Medias{ get; set; }
     public DbSet<Tag> Tags{ get; set; }
+    public DbSet<Category> Categories{ get; set; }
     public CreatorsDbContext(DbContextOptions<CreatorsDbContext> options)
     :base(options)
     {
@@ -48,10 +50,32 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         .HasForeignKey<TagInfo>(ti => ti.Id)
         .IsRequired();
 
+        modelBuilder.Entity<Category>().SeedEnumValues<Category, CategoryEnum>(ce=>ce);
+
         var media = modelBuilder.Entity<Media>();
         media.HasOne(m=>m.Group).WithMany(g=>g.Medias).HasForeignKey("GroupId");
         media.HasOne(m => m.Uploader).WithMany();
 
+        //modelBuilder.Entity<Category>().
+
         base.OnModelCreating(modelBuilder);
     }
+
+
+    //Couses concurency exception for some reaason. For now using extention method on model creation
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // => optionsBuilder
+    //    .EnableSensitiveDataLogging()
+    //    .UseSeeding((context, _) 
+    //        => {
+    //            (context as CreatorsDbContext).Categories.SeedEnumValues<Category, CategoryEnum>((categoryEnum) => categoryEnum);
+    //            context.SaveChanges();
+    //        })
+    //    .UseAsyncSeeding(async(context, _, ct) 
+    //        => {
+    //            (context as CreatorsDbContext).Categories.SeedEnumValues<Category, CategoryEnum>((categoryEnum) => categoryEnum);
+    //            await context.SaveChangesAsync(ct);
+    //        });
+
 }
