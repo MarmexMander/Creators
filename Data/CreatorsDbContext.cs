@@ -29,6 +29,9 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         users.HasMany(u=>u.VotedUp).WithMany().UsingEntity("UsersVotedUpPublications");
         users.HasMany(u=>u.VotedDown).WithMany().UsingEntity("UsersVotedDownPublications");
         users.Navigation(u=>u.Pfp).AutoInclude();
+        users.Property(u=>u.UploadTier)
+        .HasConversion( ut => (UploadTierEnum)ut, ute => (UploadTier)ute)
+        .HasDefaultValue((UploadTier)UploadTierEnum.Tier1);
         
         var comments = modelBuilder.Entity<Comment>();
         comments.HasOne(c => c.Author).WithMany();
@@ -38,17 +41,18 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         comments.Navigation(c=>c.Publication).AutoInclude();
 
         var publications = modelBuilder.Entity<Publication>();
-        publications.HasOne(p => p.Preview).WithMany();
+        //publications.HasOne(p => p.Preview).WithMany();
         publications.HasOne(p => p.MediaContent).WithMany();
         publications.HasMany(p => p.Tags).WithMany();
         publications.HasMany(p => p.Comments).WithOne(c => c.Publication);
-        publications.Navigation(p=>p.Preview).AutoInclude();
+        //publications.Navigation(p=>p.Preview).AutoInclude();
 
         var tags = modelBuilder.Entity<Tag>();
         tags.HasOne(t=>t.AliasedTo).WithMany();
         tags.HasMany(t => t.Categories).WithMany();
 
         modelBuilder.Entity<Category>().SeedEnumValues<Category, CategoryEnum>(ce=>ce);
+        modelBuilder.Entity<UploadTier>().SeedEnumValues<UploadTier, UploadTierEnum>(ce=>ce);
 
         var media = modelBuilder.Entity<Media>();
         media.HasOne(m=>m.Group).WithMany(g=>g.Medias).HasForeignKey("GroupId");

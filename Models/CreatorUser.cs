@@ -18,12 +18,12 @@ public enum AccessFlags
     //15-24 reserved for restrictions
     ReadOnly = 1 << 15,
     RestricContentFlagging = 1 << 16,
-    //25-30 reserved for user tiers
-    UploaderTier1 = 1 << 25,
-    UploaderTier2 = 1 << 26,
-    UploaderTier3 = 1 << 27,
-    UploaderTier4 = 1 << 28,
-    UploaderTier5 = 1 << 29,
+    //25-30 reserved for user tiers [depricated] (we moved to the MediaLimiterService.cs)
+    // UploaderTier1 = 1 << 25,
+    // UploaderTier2 = 1 << 26,
+    // UploaderTier3 = 1 << 27,
+    // UploaderTier4 = 1 << 28,
+    // UploaderTier5 = 1 << 29,
 }
 
 public class CreatorUser : IdentityUser //TODO: Add default values
@@ -37,4 +37,5 @@ public class CreatorUser : IdentityUser //TODO: Add default values
     public List<Publication> VotedUp{ get; set; }
     public List<Publication> VotedDown{ get; set; }
     public List<IdentityRole<int>> Roles{ get; set; }
+    public UploadTier UploadTier { get; set; }
 }

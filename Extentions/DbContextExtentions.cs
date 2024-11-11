@@ -13,7 +13,7 @@ static class DbContextExtentions
                                .ToList()
                                .ForEach(instance => dbSet.Update(instance));
 
-    public static void SeedEnumValues<T, TEnum>(this EntityTypeBuilder<Category> entityTypeBuilder, Func<TEnum, T> converter)
+    public static void SeedEnumValues<T, TEnum>(this EntityTypeBuilder<T> entityTypeBuilder, Func<TEnum, T> converter)
         where TEnum : Enum
         where T : class
     {

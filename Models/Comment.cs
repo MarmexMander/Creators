@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Creators.Models;
@@ -13,6 +14,7 @@ public class Comment
 
     private List<Comment> _children;
 
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
     public CreatorUser Author { get; set; }
     public Comment? Parent { get; set; }
