@@ -3,6 +3,9 @@ using Creators.Models;
 using Creators.Areas.Gallery.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Schema;
+using Microsoft.AspNetCore.Authorization;
+using Creators.Services;
 
 namespace Creators.Areas.Gallery.Controllers;
 [Area("Gallery")]
@@ -10,10 +13,16 @@ public class PublicationController : Controller
 {
     private readonly Data.CreatorsDbContext _dbContext;
     private readonly UserManager<CreatorUser> _userManager;
-    public PublicationController(Data.CreatorsDbContext dbContext, UserManager<CreatorUser> userManager)
+    private readonly IMediaFileManager _mediaManager;
+    public PublicationController(
+        Data.CreatorsDbContext dbContext,
+        UserManager<CreatorUser> userManager,
+        IMediaFileManager mediaManager
+    )
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _mediaManager = mediaManager;
     }
 
     public IActionResult Test()
@@ -31,24 +40,45 @@ public class PublicationController : Controller
         return View(publication);
     }
 
-    [HttpGet]
+    [HttpGet, Authorize]
     public IActionResult Add()
     {
         return View();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Add(PublicationDTO model)
-    {
+    [HttpPost, Authorize]
+    public async Task<ActionResult<Guid>> Add(PublicationDTO model)
+    {    
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid publication data.");
+        }
+        //Upload the file using static controller
+        //OR NOT
+        //Maybe move uploading to the js and make it request
+        // uploading before adding publication
+        //Make two api request: 
+        //  Prepare uploading: check file size, MIME and 
+        //   user status and warn about needed compression
+        //  Upload: actually, upload
+        //FIXME: finish here
 
-        await Task.Yield();
-    
-        return null;
+        //Assemble the entity
+        Publication publication = new(){
+            Title = model.Title,
+            Author = await _userManager.GetUserAsync(User),
+            //FIXME: finish here
+        };
+
+        //Write new entity to the DB
+        var x = await _dbContext.Publications.AddAsync(publication);
+        await _dbContext.SaveChangesAsync();
+        return publication.Id;
     }
     
     
 
-    [HttpPost("comment")]
+    [HttpPost("comment"), Authorize]
     public async Task<IActionResult> PostComment(CommentDTO model)
     {
         if (!ModelState.IsValid)
@@ -65,7 +95,6 @@ public class PublicationController : Controller
 
         var comment = new Comment
         {
-            Id = Guid.NewGuid(),
             Content = model.Content,
             CreatedAt = DateTime.UtcNow,
             Author = await _userManager.GetUserAsync(User), 

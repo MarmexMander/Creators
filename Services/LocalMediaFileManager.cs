@@ -11,6 +11,7 @@ class LocalMediaFileManager : IMediaFileManager, IDisposable
     private readonly SemaphoreSlim _writeSemaphore = new(8);
     bool _isDisposed = false;
 
+    //TODO:?Use only guid to access file to fully separate from entity?
     public LocalMediaFileManager(IConfiguration configuration, ILogger<LocalMediaFileManager> logger){
         _configuration = configuration;
         _mediaLocation = _configuration.GetValue<string>("LocalMediaLocation");
@@ -45,31 +46,65 @@ class LocalMediaFileManager : IMediaFileManager, IDisposable
         return $"/static/{metadata.Guid}";
     }
 
-    public async Task<bool> UploadMediaAsync(Media metadata, IFormFile file)//TODO: implement full uploading and metadata generation
+
+    public async Task<bool> UploadMediaAsync(Stream file, Media mediaData, CancellationToken ct = default)
     {
         if (_isDisposed)
                 throw new ObjectDisposedException(nameof(LocalMediaFileManager));
 
-        await _writeSemaphore.WaitAsync();
+        bool shouldRevert = false; 
+
+        //Try to upload the file
         try
         {
-            string fileExtention = Path.GetExtension(metadata.OriginalName);
-            string filePath = Path.Combine(_mediaLocation, $"{metadata.Guid}{fileExtention}");
+            await _writeSemaphore.WaitAsync(ct);
+            string fileExtention = Path.GetExtension(mediaData.OriginalName);
+            string filePath = Path.Combine(_mediaLocation, $"{mediaData.Guid}{fileExtention}");
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await file.CopyToAsync(fileStream);
+                await file.CopyToAsync(fileStream, ct);
             }
-
-            return true;
+            
+            if(ct.IsCancellationRequested){
+                shouldRevert = true;
+                return false;
+            }
+        }
+        catch(TaskCanceledException){
+            shouldRevert = true;
+            _logger.LogWarning($"The uploadding of file {mediaData.OriginalName} was cancelled");
+            return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error while uploading file {file.FileName}"); //TODO: add more verbose output
+            shouldRevert = true;
+            _logger.LogError(ex, $"Error while uploading file {mediaData.OriginalName}: {ex.Message}");
             return false;
         }
         finally
         {
+            if (shouldRevert)
+            {
+                
+            }
+            else
+            {
+
+            }
             _writeSemaphore.Release();
         }
+        return true;
+    }
+
+    //FIXME: Implemet I(Thumb)Manager service and use it to generate and show previews
+    public string GetMediaPreviewStaticUrl(Media metadata)
+    {
+        return GetMediaStaticUrl(metadata);
+    }
+
+    //FIXME: Implemet I(Thumb)Manager service and use it to generate and show previews
+    public FileStream GetMediaPreviewStream(Media metadata)
+    {
+        return GetMediaStream(metadata);
     }
 }

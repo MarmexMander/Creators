@@ -14,7 +14,7 @@ public enum UploadTierEnum
 public class UploadTier
 {
     public class MediaLimitations{
-        public AudioQuality AudioBitrate { get; set; }
+        public int AudioBitrate { get; set; }
         public long AudioSize { get; set; }
         public int VideoBitrate { get; set; }
         public long VideoSize { get; set; }
