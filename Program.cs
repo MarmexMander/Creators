@@ -3,7 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Creators.Services;
+using Creators.Models;
+using FFMpegCore;
 
+
+
+GlobalFFOptions.Configure(options => options.BinaryFolder = "/usr/bin");
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("CreatorsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'CreatorsDbContextConnection' not found.");
@@ -22,10 +27,14 @@ builder.Services.AddDbContext<CreatorsDbContext>(b =>
 
 builder.Services.AddLogging( logger => {
     logger.AddConsole();
+    logger.SetMinimumLevel(LogLevel.Debug );
 });
 
-builder.Services.AddDefaultIdentity<Creators.Models.CreatorUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CreatorsDbContext>();
+builder.Services.Configure<Dictionary<UploadTierEnum, UploadTier.MediaLimitations>>(
+    builder.Configuration.GetSection("MediaLimits"));
+builder.Services.AddDefaultIdentity<CreatorUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<CreatorsDbContext>();
 builder.Services.AddScoped<IMediaFileManager, LocalMediaFileManager>();
+builder.Services.AddScoped<MediaLimiterService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -41,6 +50,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "areas",

@@ -10,7 +10,7 @@ public class PublicationDTO
     [DisplayName("Description")]
     public string? Description { get; set;}
     [DisplayName("Upload your work here")]
-    public IFormFile Media { get; set; }
+    public Guid Media { get; set; }
     [DisplayName("Category")]
     public CategoryEnum Category{ get; set; }
     [DisplayName("Tags")]

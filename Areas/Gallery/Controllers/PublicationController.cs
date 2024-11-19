@@ -53,14 +53,7 @@ public class PublicationController : Controller
         {
             return BadRequest("Invalid publication data.");
         }
-        //Upload the file using static controller
-        //OR NOT
-        //Maybe move uploading to the js and make it request
-        // uploading before adding publication
-        //Make two api request: 
-        //  Prepare uploading: check file size, MIME and 
-        //   user status and warn about needed compression
-        //  Upload: actually, upload
+        
         //FIXME: finish here
 
         //Assemble the entity

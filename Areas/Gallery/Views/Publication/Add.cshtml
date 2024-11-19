@@ -1,6 +1,8 @@
 @model PublicationDTO
 @using Creators.Data;
 @inject CreatorsDbContext db;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<CreatorUser> UserManager;
 <form asp-action="Add" method="post" class="flex flex-col " enctype="multipart/form-data" id="publicationForm">
     <label asp-for="Title"></label>
     <input asp-for="Title"/>
@@ -9,56 +11,19 @@
     <label asp-for="Description"></label>
     <input asp-for="Description"/>
     <label asp-for="Media"></label>
-    <input asp-for="Media"/> @*TODO: Preloading*@
+    <input type="file" asp-for="Media"/> @*TODO: Preloading*@
     <label asp-for="Category"></label>
     <select asp-for="Category" asp-items="Html.GetEnumSelectList<CategoryEnum>()" ></select>    
     <label asp-for="Tags"></label>
     <partial name="_TagsSelector" model='"Tags"'/>
     <label asp-for="IsNSFW"></label>
     <input asp-for="IsNSFW"/>
+    <label>Is only you can use this media in posts and PFP?</label>
+    <input id="IsExclusiveToAuthor" name="IsExclusiveToAuthor" type="checkbox"/>
+    <input id="MediaAuthor" type="hidden" value="@UserManager.GetUserName(User)"/> @*TODO: Users that uploads text publications should have possibility to upload third party art for a cover or select among existing (in first case thay should enter author name themselves )*@
     <button id="submitButton" type="submit" class="btn btn-primary">Create publication</button> 
 </form>
 
 @section Scripts{
-    <script>
-        document.getElementById("publicationForm").addEventListener("submit", async function (event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const form = document.getElementById("publicationForm");
-            const submitButton = document.getElementById("submitButton");
-            const loadingSpinner = document.getElementById("loadingSpinner");
-
-            // Disable the form and show the loading spinner
-            submitButton.disabled = true;
-            //loadingSpinner.style.display = "block";
-
-            // Create FormData object to handle file upload
-            const formData = new FormData(form);
-
-            try {
-                // Send form data asynchronously with Fetch API
-                const response = await fetch(form.action, {
-                    method: "POST",
-                    body: formData
-                });
-
-                // Hide the loading spinner
-                //loadingSpinner.style.display = "none";
-
-                if (response.ok) {
-                    //TODO: redirect to the publication page and make post request add popup messages to the bag    
-                } else {
-                    // If response has errors, re-enable form and display an error message
-                    submitButton.disabled = false;
-                    alert("Error: Could not create publication. Please try again.");
-                }
-            } catch (error) {
-                // Handle network or other errors
-                console.error("Error submitting form:", error);
-                alert("An error occurred. Please try again.");
-                submitButton.disabled = false;
-                //loadingSpinner.style.display = "none";
-            }
-        });
-    </script>
+    @Html.IncludeViewScript()
 }

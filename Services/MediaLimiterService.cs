@@ -2,8 +2,10 @@ using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Drawing;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Creators.Models;
 using FFMpegCore;
+using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
 using Microsoft.AspNetCore.Identity;
 
@@ -25,7 +27,7 @@ public class MediaLimiterService
         public long size;
     }
 
-    public struct MediaLimitsData{
+    public class MediaLimitsData{
         public MediaType mediaType;
         public bool Limited {get; set;}
         public float? CompressionRatio {get; set;}
@@ -41,11 +43,12 @@ public class MediaLimiterService
         _httpContext = httpContextAccessor.HttpContext;
         _userManager = userManager;
         //read limits from config
+        
         var tierLimits = new Dictionary<UploadTierEnum, UploadTier.MediaLimitations>();
 
         foreach (UploadTierEnum tier in Enum.GetValues(typeof(UploadTierEnum)))
         {
-            var sectionPath = $"MediaLimits:{tier}";
+            var sectionPath = $"MediaLimits:{(int)tier}";
             var limitations = configuration.GetSection(sectionPath).Get<UploadTier.MediaLimitations>();
 
             if (limitations != null)
@@ -102,35 +105,34 @@ public class MediaLimiterService
         return new Size(newWidth, newHeight);
     }
     
-    private bool CheckLimits(MediaAnalysisData data, UploadTier.MediaLimitations limits){
+    private bool IsLimited(MediaAnalysisData data, UploadTier.MediaLimitations limits){
         return data.mediaType switch
         {
             MediaType.Video => 
-                data.mediaAnalysis.PrimaryVideoStream != null &&
-                data.mediaAnalysis.PrimaryVideoStream.BitRate <= limits.VideoBitrate &&
-                data.mediaAnalysis.PrimaryVideoStream.Width <= limits.VideoResolution.Width &&
-                data.mediaAnalysis.PrimaryVideoStream.Height <= limits.VideoResolution.Height &&
-                data.size <= limits.VideoSize,
+                data.mediaAnalysis.PrimaryVideoStream == null ||
+                data.mediaAnalysis.PrimaryVideoStream.BitRate > limits.VideoBitrate ||
+                data.mediaAnalysis.PrimaryVideoStream.Width > limits.VideoResolution.Width ||
+                data.mediaAnalysis.PrimaryVideoStream.Height > limits.VideoResolution.Height ||
+                data.size > limits.VideoSize,
             
             MediaType.Audio => 
-                data.mediaAnalysis.PrimaryAudioStream != null &&
-                data.mediaAnalysis.PrimaryAudioStream.BitRate <= (long)limits.AudioBitrate &&
-                data.size <= limits.AudioSize,
+                data.mediaAnalysis.PrimaryAudioStream == null ||
+                data.mediaAnalysis.PrimaryAudioStream.BitRate > (long)limits.AudioBitrate ||
+                data.size > limits.AudioSize,
             
             MediaType.Image => 
-                data.mediaAnalysis.PrimaryVideoStream != null &&
-                data.mediaAnalysis.PrimaryAudioStream == null &&
-                data.mediaAnalysis.PrimaryVideoStream.Width <= limits.ImageResolution.Width &&
-                data.mediaAnalysis.PrimaryVideoStream.Height <= limits.ImageResolution.Height &&
-                data.size <= limits.ImageSize,
+                data.mediaAnalysis.PrimaryVideoStream == null ||
+                data.mediaAnalysis.PrimaryVideoStream.Width > limits.ImageResolution.Width ||
+                data.mediaAnalysis.PrimaryVideoStream.Height > limits.ImageResolution.Height ||
+                data.size > limits.ImageSize,
             
-            _ => false
+            _ => throw new ArgumentException("Unknown type of media data", nameof(data))
         };
     }
 
     private void SetLimits(MediaAnalysisData data, UploadTier.MediaLimitations limits, ref MediaLimitsData result){
         if(result.Limited == null)
-            result.Limited = CheckLimits(data, limits);
+            result.Limited = IsLimited(data, limits);
         if(result.Limited == false)
             return;
 
@@ -169,6 +171,7 @@ public class MediaLimiterService
         // Create a temporary output stream for the recoded media
         var outputStream = new MemoryStream();
         MediaType mediaType = limitsData.mediaType;
+        media.Position=0;
         // Create FFmpeg arguments
         var ffmpegArguments = FFMpegArguments.FromPipeInput(new StreamPipeSource(media))
             .OutputToPipe(new StreamPipeSink(outputStream), options =>
@@ -234,14 +237,25 @@ public class MediaLimiterService
         //TODO: MediaLimits data and MediaAnalysis data using looks like pipeline or builder.
         MediaLimitsData result = new();
         result.mediaType = mediaData.mediaType;
-        result.Limited = CheckLimits(mediaData, limits);
+        result.Limited = IsLimited(mediaData, limits);
         SetLimits(mediaData, limits, ref result);
         return result;
     }
     
     public async Task<MediaLimitsData?> AnalyzeMediaUserLimits(Stream mediaStream){
-        IMediaAnalysis mediaAnalysis = await FFProbe.AnalyseAsync(mediaStream);
-        long length = mediaStream.Length;
-        return await AnalyzeMediaUserLimits(mediaAnalysis, length);
+        mediaStream.Position = 0;
+        string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        try{
+            using(FileStream temp = File.Create(tempPath)){
+                await mediaStream.CopyToAsync(temp);
+            }
+            IMediaAnalysis mediaAnalysis = await FFProbe.AnalyseAsync(tempPath);
+            long length = mediaStream.Length;
+            return await AnalyzeMediaUserLimits(mediaAnalysis, length);
+        }
+        //catch(Exception ex){throw ex}
+        finally{
+            File.Delete(tempPath);
+        }
     }
 }

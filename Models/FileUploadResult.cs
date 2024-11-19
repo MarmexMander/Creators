@@ -5,6 +5,5 @@ public class FileUploadResult
 {
     public Guid? Guid { get; set; }
     public bool? Success { get; set; }
-
-    public MediaLimiterService.MediaLimitsData limitations;
+    public MediaLimiterService.MediaLimitsData? Limitations {get; set; }
 }
