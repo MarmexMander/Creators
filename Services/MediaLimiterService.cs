@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Drawing;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
@@ -172,51 +173,67 @@ public class MediaLimiterService
         var outputStream = new MemoryStream();
         MediaType mediaType = limitsData.mediaType;
         media.Position=0;
+        //TODO: Refactor
+        string? extention = limitsData.mediaType switch {
+            MediaType.Audio => "mp3",
+            MediaType.Video => "webm",
+            MediaType.Image => "png",
+            _ => null
+        };
         // Create FFmpeg arguments
-        var ffmpegArguments = FFMpegArguments.FromPipeInput(new StreamPipeSource(media))
-            .OutputToPipe(new StreamPipeSink(outputStream), options =>
-            {
-                // Handle video settings
-                if (mediaType == MediaType.Video)
-                {
-                    // Set video bitrate if it's limited
-                    if (limitsData.UploadedBitrate.HasValue)
+        using (var tempOut = new TempFile(extention)){
+            using (var tempIn = new TempFile(media)){
+                var ffmpegArguments = FFMpegArguments.FromFileInput(tempIn.FilePath)
+                    .OutputToFile(tempOut.FilePath, true, options =>
                     {
-                        options.WithVideoBitrate(limitsData.UploadedBitrate.Value);
-                    }
+                        // Handle video settings
+                        if (mediaType == MediaType.Video)
+                        {
+                            // Set video bitrate if it's limited
+                            if (limitsData.UploadedBitrate.HasValue)
+                            {
+                                options.WithVideoBitrate(limitsData.UploadedBitrate.Value);
+                            }
 
-                    // Set video resolution if it's limited
-                    if (limitsData.UploadedResolution.HasValue)
-                    {
-                        options.Resize(limitsData.UploadedResolution.Value.Width, limitsData.UploadedResolution.Value.Height);
-                    }
+                            // Set video resolution if it's limited
+                            if (limitsData.UploadedResolution.HasValue)
+                            {
+                                options.Resize(limitsData.UploadedResolution.Value.Width, limitsData.UploadedResolution.Value.Height);
+                            }
 
-                    // Apply compression ratio if specified
-                    if (limitsData.CompressionRatio.HasValue)
-                    {
-                        int crf = (int)(limitsData.CompressionRatio.Value * 51); // Scale to FFMpeg's CRF range (0-51)
-                        options.WithVideoCodec("libx264").WithConstantRateFactor(crf);
-                        //TODO: Check video compression
-                    }
-                }
-                // Handle audio settings
-                else if (mediaType == MediaType.Audio)
-                {
-                    // Set audio bitrate if it's limited
-                    if (limitsData.UploadedBitrate.HasValue)
-                    {
-                        options.WithAudioBitrate(limitsData.UploadedBitrate.Value);
-                    }
-                    //TODO: Implement audio compression
-                }
+                            // Apply compression ratio if specified
+                            if (limitsData.CompressionRatio.HasValue)
+                            {
+                                int crf = (int)(limitsData.CompressionRatio.Value * 51); // Scale to FFMpeg's CRF range (0-51)
+                                options.WithVideoCodec("libx264").WithConstantRateFactor(crf);
+                                //TODO: Check video compression
+                            }
+                        }
+                        // Handle audio settings
+                        else if (mediaType == MediaType.Audio)
+                        {
+                            // Set audio bitrate if it's limited
+                            if (limitsData.UploadedBitrate.HasValue)
+                            {
+                                options.WithAudioBitrate(limitsData.UploadedBitrate.Value);
+                            }
+                            //TODO: Implement audio compression
+                        }
+                        else if (mediaType == MediaType.Image)
+                        {
+                            if(limitsData.UploadedResolution.HasValue)
+                                options.Resize(limitsData.UploadedResolution);
+                            //TODO: Implement image compression
+                        }
 
-                options.OverwriteExisting();
+                        options.OverwriteExisting();
+                    }
+                );
+                // Run FFmpeg and wait for the process to complete
+                await ffmpegArguments.ProcessAsynchronously();
             }
-        );
-
-        // Run FFmpeg and wait for the process to complete
-        await ffmpegArguments.ProcessAsynchronously();
-
+            tempOut.FileStream.CopyTo(outputStream);
+        }
         // Reset the output stream position for reading
         outputStream.Position = 0;
 

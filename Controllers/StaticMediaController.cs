@@ -93,9 +93,10 @@ public class StaticMediaController : Controller
         _mediaCache[UserId].Media = new();
         await file.CopyToAsync(_mediaCache[UserId].Media);
         //Gather metadata
+        //FIXME: The extention gathers from the filename, but we converting all the stuff to predetermined extentions
         _mediaCache[UserId].Metadata = new(){ //TODO: Reimplement all this shit with builders
             OriginalName = file.FileName,
-            Uploader = await _userManager.GetUserAsync(User),
+            UploaderId = UserId,
             MimeType = file.ContentType,
         };
         //Analyse the media
@@ -119,12 +120,11 @@ public class StaticMediaController : Controller
         if(!_mediaCache.ContainsKey(UserId) || _mediaCache[UserId].Media == null)
             return BadRequest("No media was preloaded to the server to upload it");
         var cahedMetadata = _mediaCache[UserId].Metadata;
-        if(user == null || user.Id != cahedMetadata.Uploader.Id
+        if(user == null || user.Id != cahedMetadata.UploaderId
         )
             return BadRequest("Uploading user is not consistent. Do not change users while trying to upload");
         //Check metadata
         cahedMetadata.Author = metadata.Author;
-        cahedMetadata.Group = metadata.Group;
         cahedMetadata.IsPublic = metadata.IsPublic;
         cahedMetadata.IsExclusiveToAuthor = metadata.IsExclusiveToAuthor;
         cahedMetadata.UploadedAt = DateTime.UtcNow;
@@ -147,6 +147,11 @@ public class StaticMediaController : Controller
                 _mediaCache[UserId].ConvertedMedia,
                 cahedMetadata
             );
+
+        if(uploadSuccess)
+            _db.SaveChanges();
+        else
+            _db.Medias.Remove(cahedMetadata);
 
         var result = new FileUploadResult(){
             Success = uploadSuccess,

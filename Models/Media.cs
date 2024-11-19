@@ -10,10 +10,10 @@ public class Media
     public Guid Guid {get; set;}
     public string OriginalName {get; set;}
     public string MimeType{get; set;}
+    public string UploaderId {get; set;}
     public CreatorUser Uploader {get; set;}
     public string Author {get; set;}
     public DateTime UploadedAt {get; set;}
-    public MediaGroup? Group{get; set;}
     public int LinksCount {get; set;} = 0;
     //Is media will be shown by the static link for non logged in users
     public bool IsPublic {get; set;} = true;

@@ -55,8 +55,7 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
         modelBuilder.Entity<UploadTier>().SeedEnumValues<UploadTier, UploadTierEnum>(ce=>ce);
 
         var media = modelBuilder.Entity<Media>();
-        media.HasOne(m=>m.Group).WithMany(g=>g.Medias).HasForeignKey("GroupId");
-        media.HasOne(m => m.Uploader).WithMany();
+        media.HasOne(m => m.Uploader).WithMany().HasForeignKey(m=>m.UploaderId);
 
         //modelBuilder.Entity<Category>().
 
