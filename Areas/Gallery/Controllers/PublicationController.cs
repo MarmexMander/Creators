@@ -46,6 +46,7 @@ public class PublicationController : Controller
         return View();
     }
 
+
     [HttpPost, Authorize]
     public async Task<ActionResult<Guid>> Add(PublicationDTO model)
     {    
@@ -53,18 +54,30 @@ public class PublicationController : Controller
         {
             return BadRequest("Invalid publication data.");
         }
-        
-        //FIXME: finish here
-
+        var tags = await _dbContext.Tags.AsNoTracking().Where(t=>model.Tags.Contains(t.Name)).ToListAsync();
+        var invalidTags = tags.Where(t => !(t.Categories?.Contains(model.Category) ?? true)); //If tag categories is null, it handled as universal
+        //TODO: Generate warning for user
+        if (invalidTags?.Any() == true)
+             tags.RemoveAll(t => invalidTags.Contains(t));
         //Assemble the entity
         Publication publication = new(){
             Title = model.Title,
             Author = await _userManager.GetUserAsync(User),
-            //FIXME: finish here
+            MediaContentId = model.Media,
+            Tags = tags,
+            TextContent = model.TextContent,
+            Description = model.Description,
+            Category = model.Category,
+            IsNSFW = model.IsNSFW
         };
 
         //Write new entity to the DB
         var x = await _dbContext.Publications.AddAsync(publication);
+        _dbContext.Entry(publication.Category).State = EntityState.Modified;
+        publication.Tags.ForEach(
+            t => _dbContext.Entry(t).State = EntityState.Modified
+            );
+
         await _dbContext.SaveChangesAsync();
         return publication.Id;
     }

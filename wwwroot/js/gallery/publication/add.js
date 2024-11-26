@@ -19,9 +19,9 @@ async function PreloadFile(){
             method: "POST",
             body: formData,
             signal: currentAbortController.signal
-        }).then(result => {
+        }).then(async result => {
             console.log("File upload and analysis result:", result);
-            preuploadResult = result.json();
+            preuploadResult = await result.json();
             //alert("File successfully analyzed!");
         });
         //TODO: Show warning with info about limits
@@ -57,7 +57,7 @@ async function upload(){
                 "Content-Type" : "application/json"
             }
         })
-        return response.text;
+        return await response.json();
     }
     catch(e){return null}
 }
@@ -80,7 +80,8 @@ document.getElementById("publicationForm").addEventListener("submit", async func
     // Disable the form and show the loading spinner
     submitButton.disabled = true;
     //loadingSpinner.style.display = "block";
-    const uploadGuid = await upload();
+    const uploadResult = await upload();
+    const uploadGuid = uploadResult.guid;
     if(uploadGuid == null){
         throw new Error("Failed to upload media");
     }

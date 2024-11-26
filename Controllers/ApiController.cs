@@ -31,6 +31,6 @@ namespace Creators.Controllers
             .ToListAsync();
 
             return tags;
-        }        
+        }
     }
 }

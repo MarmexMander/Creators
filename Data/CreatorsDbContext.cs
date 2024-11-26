@@ -42,7 +42,7 @@ public class CreatorsDbContext: IdentityDbContext<CreatorUser>
 
         var publications = modelBuilder.Entity<Publication>();
         //publications.HasOne(p => p.Preview).WithMany();
-        publications.HasOne(p => p.MediaContent).WithMany();
+        publications.HasOne(p => p.MediaContent).WithMany().HasForeignKey(p => p.MediaContentId);
         publications.HasMany(p => p.Tags).WithMany();
         publications.HasMany(p => p.Comments).WithOne(c => c.Publication);
         //publications.Navigation(p=>p.Preview).AutoInclude();

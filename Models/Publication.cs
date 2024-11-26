@@ -9,6 +9,7 @@ public class Publication
     [MaxLength(100)]
     public string Title { get; set; }
     public CreatorUser Author { get; set; }
+    public Guid? MediaContentId { get; set; }
     public Media? MediaContent { get; set; }
     public string? TextContent { get; set; }
     public string? Description { get; set; }
