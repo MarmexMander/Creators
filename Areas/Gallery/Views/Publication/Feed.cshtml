@@ -1,0 +1,9 @@
+@using Creators.Models;
+@using Creators.Services;
+@model IEnumerable<Publication>;
+@* TODO: add content paging  *@
+<div class="flex flex-row flex-wrap">
+    @foreach(var publication in Model){
+        <partial name="_PartialPublicationCard" model="publication"></partial>
+    }
+</div>

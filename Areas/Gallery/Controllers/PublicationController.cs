@@ -68,7 +68,8 @@ public class PublicationController : Controller
             TextContent = model.TextContent,
             Description = model.Description,
             Category = model.Category,
-            IsNSFW = model.IsNSFW
+            IsNSFW = model.IsNSFW,
+            CreatedAt = DateTime.UtcNow
         };
 
         //Write new entity to the DB
@@ -115,5 +116,16 @@ public class PublicationController : Controller
 
         return RedirectToAction("Show", new { id = model.PublicationId });
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Feed(){
+        //TODO: Filter by user and guest blacklists
+        var publications = await _dbContext.Publications
+        .Include(p=>p.MediaContent) //TODO: Maybe chenge to use of MediaContentId to not load all the metadata
+        .OrderByDescending(p=>p.CreatedAt).Take(35).ToListAsync(); 
+
+        return View("Feed", publications);
+    }
     
+
 }
