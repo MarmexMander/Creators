@@ -121,7 +121,7 @@ public class PublicationController : Controller
     public async Task<IActionResult> Feed(){
         //TODO: Filter by user and guest blacklists
         var publications = await _dbContext.Publications
-        .Include(p=>p.MediaContent) //TODO: Maybe chenge to use of MediaContentId to not load all the metadata
+        .Include(p=>p.MediaContent) //TODO: Maybe change to use of MediaContentId to not load all the metadata
         .OrderByDescending(p=>p.CreatedAt).Take(35).ToListAsync(); 
 
         return View("Feed", publications);

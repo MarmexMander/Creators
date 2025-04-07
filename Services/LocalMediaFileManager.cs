@@ -1,6 +1,4 @@
-using Creators.Data;
 using Creators.Models;
-using Microsoft.AspNetCore.Mvc;
 namespace Creators.Services;
 
 class LocalMediaFileManager : IMediaFileManager, IDisposable

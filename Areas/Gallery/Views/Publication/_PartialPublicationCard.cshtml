@@ -2,7 +2,8 @@
 @using Creators.Services;
 @inject IMediaFileManager mediaFiles;
 @model Publication;
-<div class="w-64 h-72 flex flex-col bg-blue-600 bg-opacity-65 rounded p-1">
+<class="block">
+<a href="@Url.Action("Show", "Publication", new { id = Model.Id })"  class="w-64 h-72 flex flex-col bg-blue-600 bg-opacity-65 rounded p-1">
     <div class="flex-grow relative overflow-hidden">
         <img src="@mediaFiles.GetMediaStaticUrl(Model.MediaContent)" 
              class="absolute inset-0 w-full h-full object-cover" />
@@ -11,4 +12,4 @@
         <div class="flex-grow text-center">Fav: @Model.FavCount</div>
         <div class="flex-grow text-center">Scores: @Model.Score</div>
     </div>
-</div>
+</a>
