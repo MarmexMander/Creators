@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpOverrides;          // ← needed
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.AspNetCore.Mvc;
 
 GlobalFFOptions.Configure(options => options.BinaryFolder = "/usr/bin");
 
@@ -46,7 +47,12 @@ if (!string.IsNullOrEmpty(redisConn))
 }
 
 // ==================== OTHER SERVICES ====================
-builder.Services.AddControllersWithViews();
+// Replace/Add controllers registration to disable antiforgery globally for MVC
+builder.Services.AddControllersWithViews(options =>
+{
+    // temporarily disable antiforgery validation for all controllers/views
+    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
+});
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
