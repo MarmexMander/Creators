@@ -5,6 +5,10 @@ using Microsoft.Extensions.FileProviders;
 using Creators.Services;
 using Creators.Models;
 using FFMpegCore;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using System;
 
 
 
@@ -12,6 +16,34 @@ GlobalFFOptions.Configure(options => options.BinaryFolder = "/usr/bin");
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("CreatorsDbContextConnection") ?? throw new InvalidOperationException("Connection string 'CreatorsDbContextConnection' not found.");
+
+// read redis connection (hardcoded default; do NOT read builder.Configuration)
+var redisConn = Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "redis:6379";
+
+if (!string.IsNullOrEmpty(redisConn))
+{
+    // Distributed cache (Redis)
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConn;
+    });
+
+    // Keep and reuse a ConnectionMultiplexer
+    var mux = ConnectionMultiplexer.Connect(redisConn);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(mux);
+
+    // Persist DataProtection keys to Redis so all instances can unprotect cookies/tokens
+    builder.Services.AddDataProtection()
+        .PersistKeysToStackExchangeRedis(() => mux.GetDatabase(), "DataProtection-Keys");
+
+    // Use session backed by IDistributedCache (Redis)
+    builder.Services.AddSession(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+        options.IdleTimeout = TimeSpan.FromMinutes(20);
+    });
+}
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -24,6 +56,7 @@ builder.Services.AddDbContext<CreatorsDbContext>(b =>
     string db = System.Environment.GetEnvironmentVariable("POSTGRES_DB");
     b.UseNpgsql($"Server=db;Port=5432;Database={db};User Id={user};Password={pwd};");
 });
+
 
 builder.Services.AddLogging( logger => {
     logger.AddConsole();
@@ -48,6 +81,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+if (!string.IsNullOrEmpty(redisConn))
+{
+    app.UseSession();
+}
 
 app.UseAuthorization();
 
